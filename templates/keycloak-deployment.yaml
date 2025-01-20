@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.keycloak.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: keycloak
+        cluster-autoscaler.kubernetes.io/safe-to-evict: 'false'
+    spec:
+      containers:
+        - name: keycloak
+          image: {{ .Values.keycloak.image }}
+          args:
+            - >-
+              -Djgroups.dns.query=keycloak-jgroups-ping.keycloak.svc.cluster.local
+              -Dkeycloak.profile.feature.token_exchange=enabled
+            - start
+            - '--auto-build'
+            - '--cache-stack=kubernetes'
+            - '--db=postgres'
+            - '--db-url=jdbc:postgresql://postgres/{{ .Values.keycloak.dbName }}'
+            - '--hostname {{ .Values.ingress.host }}'
+            - '--proxy edge'
+            - '--spi-sticky-session-encoder-infinispan-should-attach-route=false'
+            - '--hostname-strict-https=false'
+            - '--db-password={{ .Values.keycloak.dbPassword }}'
+            - '--db-username={{ .Values.keycloak.dbUsername }}'
+            - '--spi-theme-static-max-age=-1'
+            - '--spi-theme-cache-themes=false'
+            - '--spi-theme-cache-templates=false'
+          ports:
+            - containerPort: {{ .Values.keycloak.port8443 }}
+              protocol: TCP
+            - containerPort: {{ .Values.keycloak.port8080 }}
+              protocol: TCP
+            - containerPort: {{ .Values.keycloak.port4444 }}
+              protocol: TCP
+            - containerPort: {{ .Values.keycloak.port8888 }}
+              protocol: TCP
+          env:
+            - name: KEYCLOAK_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keycloak.secretName }}
+                  key: KEYCLOAK_ADMIN
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.keycloak.secretName }}
+                  key: KEYCLOAK_ADMIN_PASSWORD
+            - name: JAVA_OPTS
+              value: "-Xms128m -Xmx128m -XX:MetaspaceSize=128M -XX:MaxMetaspaceSize=128m -Djava.net.preferIPv4Stack=true -Djava.security.egd=file:/dev/./urandom -Xlog:gc* -Djgroups.dns.query=keycloak-jgroups-ping.keycloak.svc.cluster.local -Dkeycloak.profile.feature.token_exchange=enabled"
+          resources:
+            requests:
+              cpu: '1'
+              memory: 1536Mi
+          imagePullPolicy: Always
+      restartPolicy: Always
+      securityContext:
+        runAsUser: 0

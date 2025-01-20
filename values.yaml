@@ -1,0 +1,66 @@
+secrets:
+  type: Opaque
+
+keycloak:
+  # Keycloak Configuration
+  # -----------------------
+  # Name of the Keycloak Deployment
+  name: keycloak
+  # Namespace where Keycloak is deployed
+  namespace: keycloak
+  # Keycloak Docker image
+  image: quay.io/keycloak/keycloak:17.0.0
+  # Name of the database used by Keycloak
+  dbName: mydatabase
+  # Password for the database
+  dbPassword: mydbpassword
+  # Username for the database
+  dbUsername: admin
+  # Port for Keycloak (HTTPS)
+  port8443: 8443
+  # Port for Keycloak (HTTP)
+  port8080: 8080
+  # Port for Keycloak (custom)
+  port4444: 4444
+  # Port for Keycloak (custom)
+  port8888: 8888
+  # Name of the Secret containing Keycloak credentials
+  secretName: keycloak-secret
+  # Service Name for Keycloak
+  serviceName: keycloak
+
+postgres:
+  # Postgres Configuration
+  # -----------------------
+  # Name of the Postgres StatefulSet
+  name: postgres
+  # Postgres Docker image
+  image: postgres:9.5
+  # Name of the Secret containing Postgres credentials
+  secretName: postgres-secret
+  # Size of the storage for Postgres
+  storageSize: 5Gi
+  # Storage class for Postgres
+  storageClassName: do-block-storage-retain
+  # Service Name for Postgres
+  serviceName: postgres
+  # Port for Postgres
+  port: 5432
+  # Target Port for Postgres
+  targetPort: 5432
+
+ingress:
+  # Ingress Configuration
+  # -----------------------
+  # Name of the Ingress for Keycloak
+  name: keycloak-ingress
+  # Cluster issuer for TLS certificates
+  clusterIssuer: letsencrypt-prod
+  # Ingress class used for Keycloak Ingress
+  ingressClass: nginx
+  # Rewrite target for the Ingress
+  rewriteTarget: /
+  # Hostname used for the Ingress
+  host: keycloak.mydomain.com
+  # Name of the TLS secret for the Ingress
+  secretName: keycloak-tls
