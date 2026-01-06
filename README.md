@@ -32,3 +32,13 @@ This repository contains a custom Keycloak theme with:
 - admin (optional)
 
 The theme follows standard Keycloak directory conventions.
+
+## Ingress & TLS Configuration
+
+The Helm chart supports configuring TLS via cert-manager.
+
+Recommended setup:
+- Production: letsencrypt-prod
+- Non-production: letsencrypt-staging
+
+The clusterIssuer can be overridden using values.yaml per environment.
