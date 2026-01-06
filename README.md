@@ -41,4 +41,4 @@ Recommended setup:
 - Production: letsencrypt-prod
 - Non-production: letsencrypt-staging
 
-The clusterIssuer can be overridden using values.yaml per environment.
+The clusterIssuer can be overridden using Vvalues.yaml per environment.
