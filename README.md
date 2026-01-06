@@ -24,4 +24,11 @@ helm uninstall keycloak -n keycloak
 ```
 
 
+## Theme Structure
 
+This repository contains a custom Keycloak theme with:
+- login
+- account
+- admin (optional)
+
+The theme follows standard Keycloak directory conventions.
